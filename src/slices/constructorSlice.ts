@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import {TConstructorIngredient} from '@utils-types';
+import { TConstructorIngredient } from '@utils-types';
 import { orderBurgerApi } from '../utils/burger-api';
 import { v4 as uuidv4 } from 'uuid';
 import { RequestStatus } from './userSlice';
@@ -53,7 +53,7 @@ const constructorSlice = createSlice({
     }
   },
   selectors: {
-    getBurgerConstructor: (state) => state,
+    getConstructor: (state) => state,
     getIngredients: (state) => state.ingredients
   },
 

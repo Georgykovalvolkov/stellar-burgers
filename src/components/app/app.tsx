@@ -29,10 +29,10 @@ import { fetchIngredientsData } from '../../slices/ingredientsSlice';
 const App = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-   useEffect(() => {
-     dispatch(fetchIngredientsData());
-     dispatch(getUserApiThunk());
-   }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchIngredientsData());
+    dispatch(getUserApiThunk());
+  }, [dispatch]);
   const location = useLocation();
   const background = location.state?.background;
   const user = useSelector(userSelectors.getUserState);
