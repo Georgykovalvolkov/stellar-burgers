@@ -13,35 +13,44 @@ import '../../index.css';
 import styles from './app.module.css';
 
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
-import {
-  Route,
-  Routes,
-  useLocation,
-  useMatch,
-  useNavigate
-} from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { ProtectedRoute } from '../protected-route';
 import { useDispatch, useSelector } from '../../services/store';
 import { useEffect } from 'react';
 import { getUserApiThunk, userSelectors } from '../../slices/userSlice';
 import { fetchIngredientsData } from '../../slices/ingredientsSlice';
+import { fetchGetOrderByNumber } from '../../slices/orderSlice';
 
 const App = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(fetchIngredientsData());
     dispatch(getUserApiThunk());
   }, [dispatch]);
+
   const location = useLocation();
   const background = location.state?.background;
+
   const user = useSelector(userSelectors.getUserState);
-  const profileMatch = useMatch('/profile/orders/:id')?.params.id;
-  const feedMatch = useMatch('/feed/:id')?.params.id;
-  const orderNumber = profileMatch || feedMatch;
+
+  useEffect(() => {
+    if (
+      background?.pathname?.includes('/profile/orders/') ||
+      background?.pathname?.includes('/feed/')
+    ) {
+      const orderId = background.pathname.split('/').pop();
+      if (orderId) {
+        dispatch(fetchGetOrderByNumber(Number(orderId)));
+      }
+    }
+  }, [background, dispatch]);
+
   return (
     <div className={styles.app}>
       <AppHeader userName={user.name} />
+
       <Routes location={background || location}>
         <Route path='*' element={<NotFound404 />} />
         <Route path='/' element={<ConstructorPage />} />
@@ -100,9 +109,7 @@ const App = () => {
           path='/ingredients/:id'
           element={
             <div className={styles.detailPageWrap}>
-              <p
-                className={`text text_type_main-large ${styles.detailHeader} `}
-              >
+              <p className={`text text_type_main-large ${styles.detailHeader}`}>
                 Детали ингредиента
               </p>
               <IngredientDetails />
@@ -113,14 +120,10 @@ const App = () => {
           path='/profile/orders/:id'
           element={
             <div className={styles.detailPageWrap}>
-              <p
-                className={`text text_type_main-large ${styles.detailHeader} `}
-              >
-                {'Детали заказа №' + orderNumber}
+              <p className={`text text_type_main-large ${styles.detailHeader}`}>
+                Детали заказа
               </p>
-              <ProtectedRoute>
-                <OrderInfo />
-              </ProtectedRoute>
+              <OrderInfo />
             </div>
           }
         />
@@ -128,10 +131,8 @@ const App = () => {
           path='/feed/:id'
           element={
             <div className={styles.detailPageWrap}>
-              <p
-                className={`text text_type_main-large ${styles.detailHeader} `}
-              >
-                {'Детали заказа №' + orderNumber}
+              <p className={`text text_type_main-large ${styles.detailHeader}`}>
+                Детали заказа
               </p>
               <OrderInfo />
             </div>
@@ -144,23 +145,15 @@ const App = () => {
           <Route
             path='/profile/orders/:id'
             element={
-              <ProtectedRoute>
-                <Modal
-                  title={'Детали заказа №' + orderNumber}
-                  onClose={() => navigate(-1)}
-                >
-                  <OrderInfo />
-                </Modal>
-              </ProtectedRoute>
+              <Modal title='Детали заказа' onClose={() => navigate(-1)}>
+                <OrderInfo />
+              </Modal>
             }
           />
           <Route
             path='/feed/:id'
             element={
-              <Modal
-                title={'Детали заказа №' + orderNumber}
-                onClose={() => navigate(-1)}
-              >
+              <Modal title='Детали заказа' onClose={() => navigate(-1)}>
                 <OrderInfo />
               </Modal>
             }
@@ -168,7 +161,7 @@ const App = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title={'Детали ингредиента'} onClose={() => navigate(-1)}>
+              <Modal title='Детали ингредиента' onClose={() => navigate(-1)}>
                 <IngredientDetails />
               </Modal>
             }

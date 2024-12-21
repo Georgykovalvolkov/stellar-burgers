@@ -28,7 +28,10 @@ const orderSlice = createSlice({
   name: ORDER_SLICE,
   initialState,
   reducers: {
-    clearOrder: (state) => (state = initialState)
+    clearOrder: (state) => (state = initialState),
+    clearModalData: (state) => {
+      state.order = null;
+    }
   },
   selectors: {
     getOrderModalData: (state) => state.order,

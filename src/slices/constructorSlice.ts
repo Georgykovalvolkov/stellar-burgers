@@ -1,10 +1,10 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { TConstructorIngredient } from '@utils-types';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { TConstructorIngredient } from '../utils/types';
 import { orderBurgerApi } from '../utils/burger-api';
 import { v4 as uuidv4 } from 'uuid';
 import { RequestStatus } from './userSlice';
 
-export const CONSTRUCTOR_SLICE = 'Constructor';
+export const CONSTRUCTOR_SLICE = 'burgerConstructor';
 
 type TConstructorState = {
   bun?: {
@@ -26,21 +26,22 @@ const constructorSlice = createSlice({
   name: CONSTRUCTOR_SLICE,
   initialState,
   reducers: {
-    addIngredient(state, action) {
-      if (action.payload.type === 'bun') {
-        state.bun = {
-          _id: action.payload._id,
-          name: action.payload.name,
-          image: action.payload.image,
-          price: action.payload.price
-        };
-      } else {
-        const ingredientWithId = {
-          ...action.payload,
-          id: uuidv4()
-        };
-        state.ingredients.push(ingredientWithId);
-      }
+    addIngredient: {
+      reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
+        if (action.payload.type === 'bun') {
+          state.bun = {
+            _id: action.payload._id,
+            name: action.payload.name,
+            image: action.payload.image,
+            price: action.payload.price
+          };
+        } else {
+          state.ingredients.push(action.payload);
+        }
+      },
+      prepare: (ingredient: Omit<TConstructorIngredient, 'id'>) => ({
+        payload: { ...ingredient, id: uuidv4() }
+      })
     },
 
     clearIngredients(state) {
@@ -48,7 +49,10 @@ const constructorSlice = createSlice({
       state.ingredients = [];
     },
 
-    onUpdateIngredients(state, action) {
+    onUpdateIngredients(
+      state,
+      action: PayloadAction<TConstructorIngredient[]>
+    ) {
       state.ingredients = action.payload;
     }
   },
