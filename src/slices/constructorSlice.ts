@@ -49,11 +49,22 @@ const constructorSlice = createSlice({
       state.ingredients = [];
     },
 
-    onUpdateIngredients(
-      state,
-      action: PayloadAction<TConstructorIngredient[]>
-    ) {
+    onUpdateIngredients(state, action) {
       state.ingredients = action.payload;
+    },
+
+    reorderConstructor(
+      state,
+      { payload }: PayloadAction<{ from: number; to: number }>
+    ) {
+      const { from, to } = payload;
+      const ingredients = [...state.ingredients];
+      ingredients.splice(to, 0, ingredients.splice(from, 1)[0]);
+      state.ingredients = ingredients;
+    },
+
+    removeFromConstructor(state, { payload }: PayloadAction<number>) {
+      state.ingredients = state.ingredients.filter((_, idx) => idx !== payload);
     }
   },
   selectors: {
