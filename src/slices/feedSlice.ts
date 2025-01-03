@@ -53,6 +53,8 @@ export const getOrderByNum = (state: TOrdersDataState, num: number) =>
   state.feeds.orders.find((order) => order.number === num);
 export const feedSliceReducer = feedSlice.reducer;
 
+export default feedSlice;
+
 export const fetchFeedsData = createAsyncThunk<TOrdersData>(
   `${FEEDS_SLICE}/fetchFeedsData`,
   async () => await getFeedsApi()

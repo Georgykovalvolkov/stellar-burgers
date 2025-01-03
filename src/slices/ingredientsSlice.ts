@@ -49,6 +49,8 @@ export const getIngredientById = (state: TIngredientsState, id: string) =>
   state.ingredients.find((ingredient) => ingredient._id === id);
 export const ingredientsReducer = ingredientsSlice.reducer;
 
+export default ingredientsSlice;
+
 export const fetchIngredientsData = createAsyncThunk<TIngredient[]>(
   `${INGREDIENTS_SLICE}/fetchIngredientsData`,
   async () => await getIngredientsApi()

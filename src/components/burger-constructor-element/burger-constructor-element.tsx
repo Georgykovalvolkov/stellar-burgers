@@ -14,29 +14,28 @@ export const BurgerConstructorElement: FC<BurgerConstructorElementProps> = memo(
 
     const handleMoveDown = () => {
       if (index < totalItems - 1) {
-        const newIngredients = [...ingredients];
-        [newIngredients[index], newIngredients[index + 1]] = [
-          newIngredients[index + 1],
-          newIngredients[index]
-        ];
-        dispatch(constructorActions.onUpdateIngredients(newIngredients));
+        dispatch(
+          constructorActions.reorderConstructor({
+            from: index,
+            to: index + 1
+          })
+        );
       }
     };
 
     const handleMoveUp = () => {
       if (index > 0) {
-        const newIngredients = [...ingredients];
-        [newIngredients[index - 1], newIngredients[index]] = [
-          newIngredients[index],
-          newIngredients[index - 1]
-        ];
-        dispatch(constructorActions.onUpdateIngredients(newIngredients));
+        dispatch(
+          constructorActions.reorderConstructor({
+            from: index,
+            to: index - 1
+          })
+        );
       }
     };
 
     const handleClose = () => {
-      const newIngredients = ingredients.filter((_, idx) => idx !== index);
-      dispatch(constructorActions.onUpdateIngredients(newIngredients));
+      dispatch(constructorActions.removeFromConstructor(index));
     };
 
     return (
